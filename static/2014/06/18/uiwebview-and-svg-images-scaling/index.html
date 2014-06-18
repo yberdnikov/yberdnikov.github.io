@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+    <title>UIWebView and SVG images scaling</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../../../../favicon.ico">
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../../assets/css/screen.css?v=27250c780a" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+    
+    <meta name="generator" content="Ghost 0.4" />
+<link rel="alternate" type="application/rss+xml" title="Yuriy Berdnikov" href="../../../../rss/index.html">
+<link rel="canonical" href="http://yberdnikov.github.io/2014/06/18/uiwebview-and-svg-images-scaling/" />
+</head>
+<body class="post-template tag-svg tag-ios tag-uiwebview">
+
+    
+    
+
+
+
+<main class="content" role="main">
+
+    <article class="post tag-svg tag-ios tag-uiwebview">
+
+        
+        <header class="post-header">
+            <a class="blog-logo" href="http://yberdnikov.github.io">
+                
+                    <span class="blog-title">Yuriy Berdnikov</span>
+                
+            </a>
+        </header>
+
+        
+        
+
+            <span class="post-meta"><time datetime="2014-06-18">18 Jun 2014</time> on <a href="../../../../tag/svg/index.html">SVG</a> | <a href="../../../../tag/ios/index.html">iOS</a> | <a href="../../../../tag/uiwebview/index.html">UIWebView</a></span>
+
+            <h1 class="post-title">UIWebView and SVG images scaling</h1>
+
+            <section class="post-content">
+                <p>I'm currently working on one interesting project - quizzes app for iPhone and iPad. There are a lot of interesting quizzes I had to solve during development, but I want to admit one of them - displaying SVG images on iOS.</p>
+
+<h4 id="whatissvgimage">What is SVG image</h4>
+
+<p>A few words about SVGFrom Wikipedia  </p>
+
+<blockquote>
+  <p><em>Scalable Vector Graphics (SVG) is an XML-based vector image format for two-dimensional graphics with support for interactivity and animation. The SVG specification is an open standard developed by the World Wide Web Consortium (W3C) since 1999.</em></p>
+  
+  <p><em>SVG images and their behaviors are defined in XML text files. This means that they can be searched, indexed, scripted, and compressed. As XML files, SVG images can be created and edited with any text editor, but are more often created with drawing software.</em></p>
+</blockquote>
+
+<h4 id="problem">Problem</h4>
+
+<p>There is also opensource libary for rendering SVG images using CoreAnimation - <a href="http://github.com/SVGKit/SVGKit">SVGKit</a> - but after building it I realized that size of binary is twice more then app binary. So, I decided to continue using UIWebView for rendering SVG images.</p>
+
+<p>But, here are examples of problem :</p>
+
+<p><img src="../../../../content/images/2014/Jun/issue_description.jpg" alt="" /></p>
+
+<p>UIWebView can't scale SVG image correctly, even set <code>scalesPageToFit</code> to <code>YES</code>.</p>
+
+<h4 id="solution">Solution</h4>
+
+<p>Solution I found - is to correct web view's scroll view scale properties to fit web view bounds.</p>
+
+<pre><code>- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    CGSize contentSize = webView.scrollView.contentSize;
+    CGSize webViewSize = webView.bounds.size;
+    CGFloat scaleFactor = webViewSize.width / contentSize.width;
+
+    webView.scrollView.minimumZoomScale = scaleFactor;
+    webView.scrollView.maximumZoomScale = scaleFactor;
+    webView.scrollView.zoomScale = scaleFactor;
+}
+</code></pre>
+
+<p>And do not forget to set <code>webView.scalesPageToFit = NO;</code>.</p>
+
+<p>That's it - SVG images rendering without issues. <br />
+<img src="../../../../content/images/2014/Jun/Screenshot_6_12_14__12_43_PM.jpg" alt="" /></p>
+
+<h4 id="links">Links</h4>
+
+<p><a href='https://github.com/SVGKit/SVGKit'>https://github.com/SVGKit/SVGKit</a></p>
+            </section>
+
+            <footer class="post-footer">
+
+                <section class="author">
+                    <h4>Yuriy Berdnikov</h4>
+                    <p></p>
+                    <ul class="author-meta clearfix">
+                        <li>L&#x27;viv, UA</li>
+                        
+                    </ul>
+                </section>
+
+                <section class="share">
+                    <h4>Share this post</h4>
+                    <a class="icon-twitter" href="https://twitter.com/share?text=UIWebView%20and%20SVG%20images%20scaling&amp;url=http://yberdnikov.github.io/2014/06/18/uiwebview-and-svg-images-scaling/"
+                        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                        <span class="hidden">Twitter</span>
+                    </a>
+                    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://yberdnikov.github.io/2014/06/18/uiwebview-and-svg-images-scaling/"
+                        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                        <span class="hidden">Facebook</span>
+                    </a>
+                    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://yberdnikov.github.io/2014/06/18/uiwebview-and-svg-images-scaling/"
+                       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                        <span class="hidden">Google+</span>
+                    </a>
+                </section>
+
+            </footer>
+
+        
+
+    </article>
+
+</main>
+
+
+    <footer class="site-footer">
+        <a class="subscribe icon-feed" href="http://yberdnikov.github.io/rss/"><span class="tooltip">Subscribe!</span></a>
+        <div class="inner">
+             <section class="copyright">All content copyright <a href="http://yberdnikov.github.io/">Yuriy Berdnikov</a> &copy; 2014 &bull; All rights reserved.</section>
+             <section class="poweredby">Proudly published with <a class="icon-ghost" href="https://ghost.org">Ghost</a></section>
+        </div>
+    </footer>
+
+    
+    <script src="../../../../public/jquery.js?v=27250c780a"></script>
+
+    
+    <script type="text/javascript" src="../../../../assets/js/jquery.fitvids.js?v=27250c780a"></script>
+    <script type="text/javascript" src="../../../../assets/js/index.js?v=27250c780a"></script>
+
+</body>
+</html>

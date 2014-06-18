@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Yuriy Berdnikov]]></title><description><![CDATA[Just a small blog.]]></description><link>http://yberdnikov.github.io/</link><generator>Ghost v0.4.2</generator><lastBuildDate>Wed, 18 Jun 2014 15:06:39 GMT</lastBuildDate><atom:link href="http://yberdnikov.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[UIWebView and SVG images scaling]]></title><description><![CDATA[<p>I'm currently working on one interesting project - quizzes app for iPhone and iPad. There are a lot of interesting quizzes I had to solve during development, but I want to admit one of them - displaying SVG images on iOS.</p>
+
+<h4 id="whatissvgimage">What is SVG image</h4>
+
+<p>A few words about SVGFrom Wikipedia  </p>
+
+<blockquote>
+  <p><em>Scalable Vector Graphics (SVG) is an XML-based vector image format for two-dimensional graphics with support for interactivity and animation. The SVG specification is an open standard developed by the World Wide Web Consortium (W3C) since 1999.</em></p>
+  
+  <p><em>SVG images and their behaviors are defined in XML text files. This means that they can be searched, indexed, scripted, and compressed. As XML files, SVG images can be created and edited with any text editor, but are more often created with drawing software.</em></p>
+</blockquote>
+
+<h4 id="problem">Problem</h4>
+
+<p>There is also opensource libary for rendering SVG images using CoreAnimation - <a href='http://github.com/SVGKit/SVGKit' >SVGKit</a> - but after building it I realized that size of binary is twice more then app binary. So, I decided to continue using UIWebView for rendering SVG images.</p>
+
+<p>But, here are examples of problem :</p>
+
+<p><img src='http://yberdnikov.github.io/content/images/2014/Jun/issue_description.jpg'  alt="" /></p>
+
+<p>UIWebView can't scale SVG image correctly, even set <code>scalesPageToFit</code> to <code>YES</code>.</p>
+
+<h4 id="solution">Solution</h4>
+
+<p>Solution I found - is to correct web view's scroll view scale properties to fit web view bounds.</p>
+
+<pre><code>- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    CGSize contentSize = webView.scrollView.contentSize;
+    CGSize webViewSize = webView.bounds.size;
+    CGFloat scaleFactor = webViewSize.width / contentSize.width;
+
+    webView.scrollView.minimumZoomScale = scaleFactor;
+    webView.scrollView.maximumZoomScale = scaleFactor;
+    webView.scrollView.zoomScale = scaleFactor;
+}
+</code></pre>
+
+<p>And do not forget to set <code>webView.scalesPageToFit = NO;</code>.</p>
+
+<p>That's it - SVG images rendering without issues. <br />
+<img src='http://yberdnikov.github.io/content/images/2014/Jun/Screenshot_6_12_14__12_43_PM.jpg'  alt="" /></p>
+
+<h4 id="links">Links</h4>
+
+<p><a href='https://github.com/SVGKit/SVGKit' >https://github.com/SVGKit/SVGKit</a></p>]]></description><link>http://yberdnikov.github.io/2014/06/18/uiwebview-and-svg-images-scaling/</link><guid isPermaLink="false">42a012e7-0934-49e7-b197-211879819751</guid><category><![CDATA[SVG]]></category><category><![CDATA[iOS]]></category><category><![CDATA[UIWebView]]></category><dc:creator><![CDATA[Yuriy Berdnikov]]></dc:creator><pubDate>Wed, 18 Jun 2014 14:24:36 GMT</pubDate></item></channel></rss>
